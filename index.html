@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asesmen Sumatif Tengah Semester PKN - MA Muallimin NU Kota Malang</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header id="main-header" class="bg-emerald-800 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div id="header-logo-container" class="bg-white p-2 rounded-lg text-emerald-800 font-bold text-xl w-12 h-12 flex items-center justify-center shadow">
+                    NU
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">MA MUALLIMIN NU KOTA MALANG</h1>
+                    <p class="text-xs text-emerald-200">Asesmen Sumatif Tengah Semester (STS) PKN Kelas XI</p>
+                </div>
+            </div>
+            <div id="header-user-info" class="hidden flex items-center gap-4 text-sm">
+                <span id="nav-user-display" class="bg-emerald-900 px-3 py-1.5 rounded-full border border-emerald-700"></span>
+                <button onclick="logout()" class="bg-rose-600 hover:bg-rose-700 px-3 py-1.5 rounded text-white font-medium transition">Keluar</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl w-full mx-auto px-4 py-6 flex-grow">
+        
+        <!-- 1. HALAMAN LOGIN -->
+        <section id="view-login" class="max-w-md mx-auto bg-white rounded-xl shadow-lg border border-slate-100 p-8 my-8">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-emerald-900">Login Asesmen</h2>
+                <p class="text-xs text-slate-500 mt-1">Pilih tipe akun untuk masuk ke sistem</p>
+            </div>
+
+            <div class="flex rounded-lg bg-slate-100 p-1 mb-6">
+                <button onclick="switchLoginTab('siswa')" id="tab-siswa" class="flex-1 py-2 text-sm font-semibold rounded-md bg-white text-emerald-800 shadow-sm transition">Siswa</button>
+                <button onclick="switchLoginTab('admin')" id="tab-admin" class="flex-1 py-2 text-sm font-semibold rounded-md text-slate-600 transition">Admin / Guru</button>
+            </div>
+
+            <!-- Form Login Siswa -->
+            <form id="form-login-siswa" onsubmit="handleLoginSiswa(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Nama Lengkap</label>
+                    <input type="text" id="siswa-nama" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm" placeholder="Contoh: Ahmad Fauzi">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Kelas</label>
+                    <input type="text" id="siswa-kelas" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm" placeholder="Contoh: XI IPS 1">
+                </div>
+                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow">Mulai Ujian</button>
+            </form>
+
+            <!-- Form Login Admin -->
+            <form id="form-login-admin" onsubmit="handleLoginAdmin(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Username Admin</label>
+                    <input type="text" id="admin-user" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm" placeholder="admin">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Password</label>
+                    <input type="password" id="admin-pass" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow">Masuk Dashboard Admin</button>
+            </form>
+        </section>
+
+        <!-- 2. HALAMAN DASHBOARD SISWA -->
+        <section id="view-dashboard-siswa" class="hidden max-w-2xl mx-auto bg-white rounded-xl shadow border border-slate-100 p-8 my-8 text-center">
+            <h2 class="text-2xl font-bold text-emerald-900 mb-2">Selamat Datang, <span id="welcome-siswa-nama"></span>!</h2>
+            <p class="text-sm text-slate-600 mb-6">Kelas: <span id="welcome-siswa-kelas" class="font-medium"></span></p>
+            
+            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6 text-left text-sm text-emerald-900 space-y-2">
+                <p><strong>Ketentuan Ujian:</strong></p>
+                <ul class="list-disc list-inside space-y-1 text-xs">
+                    <li>Jumlah Soal: 50 Soal (25 PG, 10 PG Kompleks, 10 Menjodohkan, 5 Isian Singkat).</li>
+                    <li>Waktu Pengerjaan: 90 Menit.</li>
+                    <li>KKM: 80.</li>
+                    <li>Kesempatan Mengerjakan: Maksimal 10 kali (<span id="sisa-kesempatan-display" class="font-bold"></span>).</li>
+                </ul>
+            </div>
+
+            <div id="warning-limit" class="hidden text-rose-600 text-sm font-semibold mb-4">
+                Anda telah mencapai batas maksimal 10 kali pengerjaan ujian.
+            </div>
+
+            <button id="btn-start-ujian" onclick="startUjian()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-8 py-3 rounded-lg shadow transition">Kerjakan Soal Sekarang</button>
+        </section>
+
+        <!-- 3. HALAMAN UJIAN / SOAL -->
+        <section id="view-ujian" class="hidden max-w-4xl mx-auto space-y-6">
+            <!-- Topbar Ujian (Timer & Progress) -->
+            <div class="bg-white p-4 rounded-xl shadow border flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-4 z-20">
+                <div>
+                    <h3 class="font-bold text-slate-800">Asesmen Sumatif PKN Kelas XI</h3>
+                    <p class="text-xs text-slate-500">Materi: Pancasila & Ideologi Negara</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="bg-rose-50 text-rose-700 px-4 py-1.5 rounded-lg border border-rose-200 text-sm font-mono font-bold">
+                        Waktu: <span id="timer-display">90:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Konten Soal -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow border space-y-6">
+                <div class="flex justify-between items-center border-b pb-4">
+                    <span id="soal-nomor-kategori" class="text-xs font-bold uppercase bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full"></span>
+                    <span id="soal-progress-text" class="text-xs font-semibold text-slate-500"></span>
+                </div>
+
+                <div id="soal-container" class="space-y-4">
+                    <!-- Dinamis Diisi Script -->
+                </div>
+
+                <!-- Navigasi Soal -->
+                <div class="flex justify-between items-center pt-6 border-t">
+                    <button onclick="prevSoal()" id="btn-prev" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-5 py-2 rounded-lg text-sm transition">Sebelumnya</button>
+                    <div id="nav-pagination-dots" class="hidden sm:flex gap-1 overflow-x-auto max-w-xs py-1"></div>
+                    <button onclick="nextSoal()" id="btn-next" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-5 py-2 rounded-lg text-sm transition">Selanjutnya</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. HALAMAN HASIL / LAPORAN SISWA -->
+        <section id="view-hasil" class="hidden max-w-2xl mx-auto bg-white rounded-xl shadow border p-8 my-8 text-center space-y-6">
+            <h2 class="text-2xl font-bold text-emerald-900">Hasil Asesmen Sumatif</h2>
+            
+            <div class="p-6 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                <div>
+                    <p class="text-xs uppercase text-slate-500 font-semibold">Nama Peserta</p>
+                    <p id="hasil-nama" class="text-lg font-bold text-slate-800"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 border-y py-4">
+                    <div>
+                        <p class="text-xs uppercase text-slate-500 font-semibold">Nilai Akhir</p>
+                        <p id="hasil-skor" class="text-4xl font-extrabold text-emerald-700"></p>
+                    </div>
+                    <div>
+                        <p class="text-xs uppercase text-slate-500 font-semibold">Ketuntasan (KKM: 80)</p>
+                        <p id="hasil-keterangan" class="text-lg font-bold"></p>
+                    </div>
+                </div>
+                <p id="hasil-catatan" class="text-xs text-slate-600"></p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white font-medium px-6 py-2.5 rounded-lg text-sm transition shadow">Cetak / Simpan PDF</button>
+                <button onclick="kembaliKeDashboard()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-6 py-2.5 rounded-lg text-sm transition shadow">Kembali ke Menu Utama</button>
+            </div>
+        </section>
+
+        <!-- 5. HALAMAN DASHBOARD ADMIN / GURU -->
+        <section id="view-dashboard-admin" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow border flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-emerald-900">Panel Kontrol Admin / Guru</h2>
+                    <p class="text-xs text-slate-500">Kelola soal, ujian, dan rekapitulasi nilai siswa</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="bukaUjiCobaSiswa()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">Uji Coba Soal (Simulasi)</button>
+                    <button onclick="bukaModalGantiPassword()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">Ganti Password</button>
+                    <button onclick="bukaModalEditLogo()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">Edit Logo</button>
+                </div>
+            </div>
+
+            <!-- Tab Navigasi Admin -->
+            <div class="flex gap-2 border-b">
+                <button onclick="switchAdminTab('nilai')" id="admin-tab-nilai" class="px-4 py-2 font-bold text-sm text-emerald-800 border-b-2 border-emerald-800">Rekap Nilai Siswa</button>
+                <button onclick="switchAdminTab('soal')" id="admin-tab-soal" class="px-4 py-2 font-bold text-sm text-slate-500">Edit Bank Soal (50 Soal)</button>
+            </div>
+
+            <!-- Konten Tab Nilai -->
+            <div id="admin-content-nilai" class="bg-white p-6 rounded-xl shadow border space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800">Daftar Nilai Siswa (<span id="count-nilai">0</span> Data)</h3>
+                    <button onclick="downloadExcelNilai()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow flex items-center gap-2">
+                        📥 Download Nilai (Excel / CSV)
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-700 uppercase text-xs">
+                            <tr>
+                                <th class="p-3">No</th>
+                                <th class="p-3">Nama Lengkap</th>
+                                <th class="p-3">Kelas</th>
+                                <th class="p-3">Nilai</th>
+                                <th class="p-3">Status (KKM 80)</th>
+                                <th class="p-3">Waktu Pengerjaan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-nilai-body" class="divide-y divide-slate-100">
+                            <!-- Diisi Script -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Konten Tab Soal -->
+            <div id="admin-content-soal" class="bg-white p-6 rounded-xl shadow border space-y-6 hidden">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800">Pengaturan Bank Soal (Total 50 Soal)</h3>
+                    <button onclick="resetSoalDefault()" class="text-xs text-rose-600 hover:underline">Reset ke Soal Default</button>
+                </div>
+                <div id="admin-list-soal" class="space-y-6 max-h-[600px] overflow-y-auto pr-2">
+                    <!-- Diisi Script -->
+                </div>
+                <div class="sticky bottom-0 bg-white py-3 border-t flex justify-end">
+                    <button onclick="simpanBankSoal()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2.5 rounded-lg text-sm shadow">Simpan Perubahan Soal</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL GANTI PASSWORD ADMIN -->
+    <div id="modal-password" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-slate-800">Ganti Password Admin</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Password Baru</label>
+                    <input type="password" id="input-new-pass" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="tutupModal('modal-password')" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-medium">Batal</button>
+                <button onclick="simpanPasswordBaru()" class="px-4 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT LOGO -->
+    <div id="modal-logo" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-slate-800">Edit Logo / Teks Header</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Inisial / Singkatan Logo</label>
+                    <input type="text" id="input-new-logo" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600" placeholder="NU">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="tutupModal('modal-logo')" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-medium">Batal</button>
+                <button onclick="simpanLogoBaru()" class="px-4 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t py-4 text-center text-xs text-slate-500 mt-8">
+        <p>&copy; 2026 MA Muallimin NU Kota Malang. Disusun oleh Eggy Fachrezha Musthofa.</p>
+    </footer>
+
+    <!-- Script Aplikasi -->
+    <script>
+        // --- DATA DEFAULT 50 SOAL (Sesuai Materi & Komposisi) ---
+        const defaultSoal = [
+            // 25 PILIHAN GANDA (1 - 25)
+            {
+                type: "pg",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Dalam sebuah musyawarah desa di wilayah Malang terkait pembangunan fasilitas umum, terjadi perdebatan panas antara kelompok tani dan pedagang. Kepala desa kemudian mengingatkan agar keputusan tidak hanya mufakat, tetapi juga menjunjung tinggi nilai keadilan sosial bagi seluruh warga. Hal ini menunjukkan prinsip mutlak bahwa sila keempat Pancasila dijiwai oleh...",
+                options: ["Sila pertama dan kedua", "Sila kelima saja", "Sila pertama, kedua, dan ketiga", "Sila ketiga semata"],
+                kunci: 2 // index 2 (Sila pertama, kedua, dan ketiga)
+            },
+            {
+                type: "pg",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Sistem pemerintahan demokratis di Indonesia berlandaskan kerakyatan yang dipimpin oleh hikmat kebijaksanaan dalam permusyawaratan/perwakilan. Apabila sila keempat ini dilepaskan dari sila pertama (Ketuhanan Yang Maha Esa), maka dikhawatirkan penyelenggaraan negara akan kehilangan arah moral berupa...",
+                options: ["Orientasi keuntungan ekonomi semata", "Landasan etika spiritual dan tanggung jawab ilahi", "Kedaulatan mutlak hukum positif", "Stabilitas politik tanpa oposisi"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Mengapa sila Persatuan Indonesia tidak boleh dipisahkan dari sila Kemanusiaan yang Adil dan Beradab?",
+                options: ["Agar nasionalisme Indonesia menjadi chauvinis", "Karena persatuan harus berpijak pada pengakuan harkat martabat manusia secara universal", "Sebab kemanusiaan adalah tujuan akhir bernegara", "Karena tanpa persatuan ekonomi tidak akan tumbuh"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Hubungan hierarkis piramidal dalam Pancasila mengandung makna bahwa setiap sila...",
+                options: ["Berdiri sendiri tanpa keterikatan", "Merupakan dasar bagi sila sesudahnya dan didasari oleh sila sebelumnya", "Memiliki derajat yang sama tanpa urutan", "Hanya berlaku pada bidang hukum tata negara"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Sila Keadilan Sosial bagi Seluruh Rakyat Indonesia merupakan tujuan akhir dari perjuangan bangsa. Sila ini dijiwai secara langsung oleh sila...",
+                options: ["Sila pertama, kedua, ketiga, dan keempat", "Sila pertama saja", "Sila ketiga dan keempat", "Sila kedua"],
+                kunci: 0
+            },
+            {
+                type: "pg",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Sila Ketuhanan Yang Maha Esa mengandung pengakuan terhadap eksistensi Tuhan serta kewajiban menjalankan ajaran agama secara toleran. Makna substantif sila ini dalam kehidupan bernegara adalah...",
+                options: ["Negara mewajibkan seluruh warga menganut satu agama resmi", "Kebebasan beragama dijamin tanpa mengabaikan nilai moral keagamaan", "Pemisahan total antara urusan agama dan negara", "Agama menjadi satu-satunya sumber hukum positif"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Perilaku anti-diskriminasi, menjunjung tinggi kesetaraan gender, dan sikap tenggang rasa antarsesama manusia mencerminkan pengamalan sila...",
+                options: ["Ketuhanan Yang Maha Esa", "Kemanusiaan yang Adil dan Beradab", "Persatuan Indonesia", "Keadilan Sosial"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Semangat nasionalisme, cinta tanah air, serta rela berkorban untuk kepentingan bangsa dan negara di atas kepentingan pribadi atau golongan merupakan esensi dari sila...",
+                options: ["Kemanusiaan yang Adil dan Beradab", "Persatuan Indonesia", "Kerakyatan yang Dipimpin oleh Hikmat Kebijaksanaan", "Keadilan Sosial"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Dalam mengambil keputusan bersama di lingkungan madrasah, asas musyawarah untuk mufakat sangat diutamakan. Hal ini merupakan perwujudan dari makna sila...",
+                options: ["Kedua", "Ketiga", "Keempat", "Kelima"],
+                kunci: 2
+            },
+            {
+                type: "pg",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Wujud nyata pemenuhan hak dan kewajiban secara seimbang, serta kepedulian terhadap penderitaan sesama melalui aksi sosial di masyarakat, merefleksikan sila...",
+                options: ["Sila Pertama", "Sila Kedua", "Sila Keempat", "Sila Kelima"],
+                kunci: 3
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Ketika terjadi bencana alam di suatu daerah, para siswa MA Muallimin NU bersama-sama menggalang dana dan turun langsung membantu korban tanpa memandang latar belakang suku atau agama. Tindakan ini merupakan implementasi Pancasila sebagai...",
+                options: ["Ideologi terbuka", "Pancasila dalam tindakan nyata (praksis)", "Landasan konstitusional semata", "Teori politik kenegaraan"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Pemerintah membuat kebijakan subsidi tepat sasaran bagi masyarakat prasejahtera agar disparitas ekonomi dapat dikurangi. Kebijakan ini adalah bentuk Pancasila dalam tindakan pada bidang...",
+                options: ["Sosial dan ekonomi", "Pertahanan dan keamanan", "Pendidikan budaya", "Politik luar negeri"],
+                kunci: 0
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Menolak berita bohong (hoaks) yang memecah belah kerukunan antarumat beragama di media sosial merupakan wujud nyata pengamalan Pancasila dalam kehidupan digital, khususnya sila...",
+                options: ["Pertama dan ketiga", "Kedua dan kelima", "Keempat saja", "Pertama saja"],
+                kunci: 0
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Sebagai pelajar Pancasila, sikap kritis terhadap budaya asing harus disaring dengan tetap melestarikan budaya lokal nusantara. Tindakan ini mencerminkan pengamalan sila...",
+                options: ["Ketuhanan Yang Maha Esa", "Persatuan Indonesia", "Keadilan Sosial", "Kemanusiaan yang Adil dan Beradab"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Partisipasi aktif dalam pemilihan ketua OSIS secara demokratis dan jujur di madrasah menunjukkan perwujudan Pancasila dalam tindakan di lingkungan...",
+                options: ["Keluarga", "Sekolah/Madrasah", "Masyarakat luas", "Internasional"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Pancasila sebagai ideologi terbuka memiliki dimensi idealitas, normatif, dan fleksibilitas. Dimensi fleksibilitas mengandung arti bahwa Pancasila...",
+                options: ["Dapat diubah nilai dasarnya setiap saat", "Mampu menyesuaikan diri dengan perkembangan zaman tanpa kehilangan nilai hakikinya", "Hanya berlaku pada era kemerdekaan", "Merupakan ideologi tertutup yang kaku"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Perbedaan utama antara ideologi Pancasila dengan ideologi Liberalisme terletak pada pandangannya terhadap...",
+                options: ["Hubungan antara individu dan masyarakat/negara", "Pentingnya ilmu pengetahuan", "Sistem ekonomi pasar bebas murni", "Kedaulatan rakyat"],
+                kunci: 0
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Ideologi Komunisme menolak adanya kepemilikan pribadi dan agama dianggap sebagai candu masyarakat. Hal ini sangat bertentangan secara diametral dengan Pancasila, terutama sila...",
+                options: ["Pertama dan Kelima", "Kedua dan Ketiga", "Ketiga dan Keempat", "Keempat dan Kelima"],
+                kunci: 0
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Pancasila berkedudukan sebagai ideologi nasional sekaligus dasar negara. Sebagai ideologi negara, Pancasila berfungsi sebagai...",
+                options: ["Sumber dari segala sumber hukum", "Pedoman hidup dan pemersatu bangsa dalam menghadapi berbagai tantangan", "Undang-undang tertulis tertinggi", "Alat kekuasaan pemerintah pusat"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Menghadapi arus globalisasi dan penetrasi ideologi transnasional radikal, pertahanan mental ideologis bangsa dapat diperkuat dengan cara...",
+                options: ["Menutup diri dari seluruh bangsa asing", "Menginternalisasi nilai-nilai Pancasila dalam berpikir dan bertindak", "Mengganti sistem hukum nasional", "Meniabalkan peran agama di ruang publik"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Bagaimana korelasi antara sila ketiga dan sila kelima dalam konteks pemerataan pembangunan infrastruktur di daerah 3T (Terdepan, Terluar, Tertinggal)?",
+                options: ["Pembangunan hanya difokuskan di kota besar", "Pemerataan infrastruktur memperkuat rasa keadilan dan memperkokoh persatuan nasional", "Pembangunan ekonomi tidak ada hubungannya dengan persatuan", "Keadilan sosial tercapai tanpa persatuan wilayah"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Sikap menghargai hasil karya orang lain dan tidak menggunakan hak milik untuk hal-hal yang bersifat pemborosan atau merugikan kepentingan umum merupakan butir pengamalan dari sila...",
+                options: ["Kedua", "Ketiga", "Keempat", "Kelima"],
+                kunci: 3
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Penerapan nilai Pancasila di era digital dapat dilakukan melalui gerakan literasi digital yang santun dan beretika. Hal ini merupakan wujud keterpaduan sila...",
+                options: ["Sila pertama dan kedua", "Sila kedua dan ketiga", "Sila keempat dan kelima", "Semua sila terintegrasi"],
+                kunci: 3
+            },
+            {
+                type: "pg",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Nilai dasar yang terkandung dalam Pancasila bersifat tetap dan terlekat pada kelangsungan hidup negara, sedangkan nilai instrumental bersifat...",
+                options: ["Mutlak dan tidak boleh diubah", "Fleksibel dan menyesuaikan kebutuhan kebijakan pembangunan", "Bertentangan dengan nilai dasar", "Hanya bersifat imajinatif"],
+                kunci: 1
+            },
+            {
+                type: "pg",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Kesimpulan paling tepat mengenai struktur Pancasila adalah bahwa kelima silanya merupakan satu kesatuan yang...",
+                options: ["Terpisah-pisah dan berdiri sendiri", "Bulat dan utuh, di mana pengurangan satu sila akan meruntuhkan bangunan ideologi", "Hanya hiasan lambang negara Garuda", "Dapat dipilih sesuai kebutuhan pemerintah"],
+                kunci: 1
+            },
+
+            // 10 PILIHAN GANDA KOMPLEKS (26 - 35) (Jawaban benar lebih dari satu / multi pilihan)
+            {
+                type: "pg_kompleks",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Pilih dua pernyataan yang paling tepat menggambarkan keterkaitan erat antara sila pertama dan sila kedua Pancasila dalam kehidupan bernegara:",
+                options: [
+                    "A. Kesadaran berketuhanan yang benar akan mendorong seseorang untuk memuliakan harkat martabat manusia.",
+                    "B. Urusan agama sepenuhnya terlepas dari etika kemanusiaan.",
+                    "C. Toleransi beragama merupakan wujud nyata adab kemanusiaan yang beradab.",
+                    "D. Kemanusiaan dapat tercapai tanpa memerlukan nilai spiritualitas Ketuhanan."
+                ],
+                kunci: [0, 2] // Indeks A dan C
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Manakah dua sikap yang mencerminkan pengamalan nilai-nilai sila Persatuan Indonesia dalam masyarakat majemuk?",
+                options: [
+                    "A. Mengutamakan kelompok kesukuan sendiri di atas kepentingan nasional.",
+                    "B. Bangga menggunakan produk dalam negeri dan bahasa Indonesia.",
+                    "C. Menjunjung tinggi semangat gotong royong lintas suku dan agama.",
+                    "D. Bersikap etnosentris terhadap kebudayaan daerah lain."
+                ],
+                kunci: [1, 2]
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Pilih dua contoh konkret pelaksanaan Pancasila dalam tindakan di lingkungan sekolah (madrasah):",
+                options: [
+                    "A. Melakukan perundungan (bullying) kepada siswa baru.",
+                    "B. Mengikuti upacara bendera dengan khidmat dan tertib.",
+                    "C. Aktif berdiskusi kelompok secara musyawarah untuk menyelesaikan tugas kelas.",
+                    "D. Menyontek saat ujian demi mendapatkan nilai tinggi."
+                ],
+                kunci: [1, 2]
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Pancasila sebagai ideologi terbuka memiliki ciri-ciri tertentu. Pilih dua ciri yang tepat:",
+                options: [
+                    "A. Nilai-nilai dasarnya digali dari kekayaan budaya dan rohani bangsa Indonesia sendiri.",
+                    "B. Isinya bersifat mutlak dan berasal dari pemikiran seorang penguasa tunggal.",
+                    "C. Hasil pemikiran masyarakat, bukan ciptaan negara atau penguasa totaliter.",
+                    "D. Menutup diri sepenuhnya terhadap pengaruh modernisasi global."
+                ],
+                kunci: [0, 2]
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Pilih dua hal yang menunjukkan bahwa sila keempat (Kerakyatan) harus dijiwai oleh sila kelima (Keadilan Sosial):",
+                options: [
+                    "A. Keputusan musyawarah harus berorientasi pada kesejahteraan dan keadilan seluruh rakyat, bukan kelompok elit.",
+                    "B. Demokrasi dijalankan tanpa memperdulikan kesenjangan sosial.",
+                    "C. Kebijakan politik yang dihasilkan harus melindungi hak-hak kelompok rentan dan marginal.",
+                    "D. Suara terbanyak selalu membenarkan penindasan terhadap minoritas."
+                ],
+                kunci: [0, 2]
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Pilih dua makna substantif yang terkandung dalam sila Keadilan Sosial bagi Seluruh Rakyat Indonesia:",
+                options: [
+                    "A. Perwujudan kemakmuran yang merata bagi seluruh masyarakat tanpa diskriminasi.",
+                    "B. Kebebasan mutlak akumulasi modal tanpa batas sosial.",
+                    "C. Keseimbangan antara hak dan kewajiban warga negara.",
+                    "D. Pengutamaan hak individu di atas kepentingan kesejahteraan umum."
+                ],
+                kunci: [0, 2]
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Pilih dua bentuk aksi nyata warganet (netizen) dalam menerapkan Pancasila di media sosial:",
+                options: [
+                    "A. Menyebarkan berita hoaks untuk menjatuhkan lawan politik.",
+                    "B. Menggunakan etika komunikasi yang santun dan menghargai perbedaan pendapat.",
+                    "C. Mempromosikan produk UMKM lokal sebagai bentuk dukungan ekonomi kerakyatan.",
+                    "D. Melakukan ujaran kebencian berbasis SARA."
+                ],
+                kunci: [1, 2]
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Pilih dua perbedaan mendasar antara ideologi Pancasila dan ideologi Kapitalisme-Liberalisme:",
+                options: [
+                    "A. Pancasila mengutamakan keseimbangan kepentingan individu dan sosial, sedangkan liberalisme mengagungkan kebebasan individu mutlak.",
+                    "B. Kapitalisme melarang adanya perdagangan bebas, sedangkan Pancasila mendukung monopoli.",
+                    "C. Pancasila memperhatikan keadilan sosial, sementara liberalisme rentan menciptakan persaingan bebas tanpa perlindungan kaum lemah.",
+                    "D. Keduanya memiliki pandangan yang sama persis terhadap peran negara."
+                ],
+                kunci: [0, 2]
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Pilih dua contoh kasus di mana suatu tindakan melanggar keterkaitan sila ketiga dan sila keempat:",
+                options: [
+                    "A. Melakukan aksi demonstrasi anarkis yang merusak fasilitas umum dan memecah belah persatuan.",
+                    "B. Mengadakan musyawarah mufakat untuk membangun pos ronda kampung.",
+                    "C. Memaksakan kehendak kelompok dalam pemilu dengan cara intimidasi yang mencederai persatuan bangsa.",
+                    "D. Mengikuti pemilu secara damai dan luber jurdil."
+                ],
+                kunci: [0, 2]
+            },
+            {
+                type: "pg_kompleks",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Pilih dua sikap yang mencerminkan pengamalan sila Kemanusiaan yang Adil dan Beradab di era modern:",
+                options: [
+                    "A. Mengembangkan sikap empati terhadap korban kekerasan atau ketidakadilan di berbagai belahan dunia.",
+                    "B. Acuh tak acuh terhadap penderitaan sesama manusia demi kesibukan pribadi.",
+                    "C. Mengakui persamaan derajat, hak, dan kewajiban asasi setiap manusia tanpa membedakan ras.",
+                    "D. Memupuk rasa superioritas golongan atas golongan lain."
+                ],
+                kunci: [0, 2]
+            },
+
+            // 10 SOAL MENJODOHKAN (36 - 45)
+            {
+                type: "menjodohkan",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Pasangkan pernyataan berikut dengan sila Pancasila yang sesuai:",
+                pasangan: [
+                    { premis: "Mengembangkan perbuatan yang luhur yang mencerminkan sikap dan suasana kekeluargaan.", jawaban: "Sila Kedua" },
+                    { premis: "Sanggup dan rela berkorban untuk kepentingan negara dan bangsa apabila diperlukan.", jawaban: "Sila Ketiga" },
+                    { premis: "Tidak boleh memaksakan kehendak kepada orang lain dalam musyawarah.", jawaban: "Sila Keempat" },
+                    { premis: "Suka bekerja keras dan menghargai hasil karya orang lain.", jawaban: "Sila Kelima" }
+                ],
+                kunci_menjodohkan: [1, 2, 3, 3] // Indeks jawaban benar
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Pasangkan karakteristik ideologi dengan pandangan yang sesuai:",
+                pasangan: [
+                    { premis: "Sumber kebenaran berasal dari nilai-nilai budaya dan spiritual bangsa sendiri.", jawaban: "Pancasila" },
+                    { premis: "Menitikberatkan kepemilikan modal dan kebebasan pasar tanpa batas.", jawaban: "Liberalisme" },
+                    { premis: "Menghapuskan hak milik pribadi dan dikuasai mutlak oleh negara/partai.", jawaban: "Komunisme" },
+                    { premis: "Menjunjung tinggi kebebasan individual di atas kepentingan kolektif masyarakat.", jawaban: "Liberalisme" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 1]
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Pasangkan bentuk pengamalan dengan keterkaitan sila yang menjiwainya:",
+                pasangan: [
+                    { premis: "Musyawarah mufakat yang dilandasi nilai ketuhanan dan moral agama.", jawaban: "Sila 1, 2, dan 4" },
+                    { premis: "Bantuan sosial yang diberikan demi terwujudnya keadilan bagi seluruh rakyat.", jawaban: "Sila 2 dan 5" },
+                    { premis: "Semangat gotong royong nasional dalam menjaga keutuhan NKRI.", jawaban: "Sila 3 dan 5" },
+                    { premis: "Kebijakan politik luar negeri bebas aktif yang menjunjung perdamaian dunia.", jawaban: "Sila 2 dan 4" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 3]
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Pasangkan studi kasus tindakan dengan bidang pengamalannya:",
+                pasangan: [
+                    { premis: "Siswa madrasah menggelar bakti sosial membersihkan lingkungan makam pahlawan.", jawaban: "Sosial & Kebangsaan" },
+                    { premis: "Pemerintah memberikan subsidi listrik bagi golongan masyarakat tidak mampu.", jawaban: "Ekonomi Kerakyatan" },
+                    { premis: "Penyelenggaraan pemilihan umum secara jurdil dan transparan.", jawaban: "Politik & Demokrasi" },
+                    { premis: "Penguatan moderasi beragama di lembaga pendidikan.", jawaban: "Pendidikan & Spiritual" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 3]
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Pasangkan butir pengamalan dengan nilai sila Pancasila:",
+                pasangan: [
+                    { premis: "Mengembangkan sikap hormat-menghormati dan bekerja sama antara pemeluk agama.", jawaban: "Sila Pertama" },
+                    { premis: "Mengakui persamaan derajat, hak, dan kewajiban asasi manusia.", jawaban: "Sila Kedua" },
+                    { premis: "Memajukan pergaulan demi persatuan dan kesatuan bangsa.", jawaban: "Sila Ketiga" },
+                    { premis: "Mengutamakan musyawarah dalam mengambil keputusan untuk kepentingan bersama.", jawaban: "Sila Keempat" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 3]
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Pasangkan dimensi ideologi terbuka dengan penjelasannya:",
+                pasangan: [
+                    { premis: "Nilai-nilai dasar yang bersumber dari nilai kultural dan religius bangsa.", jawaban: "Dimensi Idealitas" },
+                    { premis: "Nilai yang dijabarkan dalam sistem normatif kenegaraan dan konstitusi.", jawaban: "Dimensi Normatif" },
+                    { premis: "Kemampuan ideologi dalam menyesuaikan dengan perkembangan zaman.", jawaban: "Dimensi Fleksibilitas" },
+                    { premis: "Cita-cita yang ingin dicapai dalam kehidupan bernegara.", jawaban: "Dimensi Idealitas" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 0]
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Pasangkan kondisi sosial dengan prinsip keterkaitan sila Pancasila:",
+                pasangan: [
+                    { premis: "Kebijakan ekonomi kapitalis murni yang menciptakan monopoli dan ketimpangan tajam.", jawaban: "Bertentangan dengan Sila 5" },
+                    { premis: "Keputusan hukum yang mengabaikan aspek moral ketuhanan dan keadilan kemanusiaan.", jawaban: "Bertentangan dengan Sila 1 & 2" },
+                    { premis: "Tindakan provokasi suku yang merusak kerukunan nasional.", jawaban: "Bertentangan dengan Sila 3" },
+                    { premis: "Diktator mayoritas dalam pengambilan keputusan parlemen.", jawaban: "Bertentangan dengan Sila 4" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 3]
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Pasangkan perilaku terpuji dengan sila yang mendasarinya:",
+                pasangan: [
+                    { premis: "Menjaga kerukunan antarumat beragama di lingkungan madrasah.", jawaban: "Sila Pertama" },
+                    { premis: "Membantu korban bencana alam tanpa memandang latar belakang.", jawaban: "Sila Kedua" },
+                    { premis: "Menggunakan produk lokal buatan UMKM Indonesia.", jawaban: "Sila Ketiga / Kelima" },
+                    { premis: "Menghormati keputusan hasil musyawarah kelas meskipun berbeda pendapat.", jawaban: "Sila Keempat" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 3]
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Pasangkan sikap anti-korupsi dengan nilai sila Pancasila yang dilanggar:",
+                pasangan: [
+                    { premis: "Melakukan korupsi dana bantuan sosial untuk rakyat miskin.", jawaban: "Melanggar Sila 2 dan 5" },
+                    { premis: "Melakukan suap dalam proses perizinan atau jabatan.", jawaban: "Melanggar Sila 4" },
+                    { premis: "Mengkhianati kepercayaan negara dan mengabaikan sumpah jabatan di hadapan Tuhan.", jawaban: "Melanggar Sila 1" },
+                    { premis: "Merusak kebersamaan dan merugikan perekonomian nasional.", jawaban: "Melanggar Sila 3 dan 5" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 3]
+            },
+            {
+                type: "menjodohkan",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Pasangkan perbandingan ideologi dengan sistem politiknya:",
+                pasangan: [
+                    { premis: "Demokrasi Pancasila berasaskan musyawarah dan kekeluargaan.", jawaban: "Indonesia" },
+                    { premis: "Demokrasi liberal berbasis pemungutan suara bebas absolut.", jawaban: "Negara Barat" },
+                    { premis: "Sistem satu partai berkuasa mutlak tanpa oposisi bebas.", jawaban: "Negara Komunis" },
+                    { premis: "Sistem teokrasi murni berdasarkan hukum keagamaan tertentu.", jawaban: "Negara Teokratis" }
+                ],
+                kunci_menjodohkan: [0, 1, 2, 3]
+            },
+
+            // 5 ISIAN SINGKAT (46 - 50)
+            {
+                type: "isian",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Sistem ideologi dunia yang menempatkan kebebasan individu secara mutlak dalam bidang ekonomi dan politik disebut ideologi...",
+                kunci: "liberalisme"
+            },
+            {
+                type: "isian",
+                kategori: "Pancasila dalam Tindakan",
+                pertanyaan: "Bentuk gotong royong khas bangsa Indonesia yang menunjukkan semangat kebersamaan dan persatuan disebut budaya...",
+                kunci: "gotong royong"
+            },
+            {
+                type: "isian",
+                kategori: "Makna Sila-Sila dalam Pancasila",
+                pertanyaan: "Sila keempat Pancasila dipimpin oleh hikmat kebijaksanaan dalam permusyawaratan /...",
+                kunci: "perwakilan"
+            },
+            {
+                type: "isian",
+                kategori: "Keterkaitan Antarsila Pancasila",
+                pertanyaan: "Hubungan antar sila dalam Pancasila bersifat hierarkis dan...",
+                kunci: "piramidal"
+            },
+            {
+                type: "isian",
+                kategori: "Pancasila sebagai Ideologi Negara",
+                pertanyaan: "Kedudukan Pancasila bagi negara Republik Indonesia selain sebagai ideologi negara juga berfungsi sebagai dasar...",
+                kunci: "negara"
+            }
+        ];
+
+        // --- STATE APLIKASI ---
+        let appState = {
+            currentUser: null, // { nama, kelas, role: 'siswa'|'admin' }
+            activeTabLogin: 'siswa',
+            bankSoal: JSON.parse(localStorage.getItem('pkn_bank_soal')) || defaultSoal,
+            nilaiList: JSON.parse(localStorage.getItem('pkn_nilai_list')) || [],
+            adminPassword: localStorage.getItem('pkn_admin_pass') || 'admin123',
+            logoText: localStorage.getItem('pkn_logo_text') || 'NU',
+            
+            // Sesi Ujian Aktif
+            currentSoalIndex: 0,
+            jawabanSiswa: {}, // indexSoal -> jawaban
+            timerInterval: null,
+            sisaWaktu: 90 * 60, // 90 menit
+            isSimulation: false
+        };
+
+        // --- INISIALISASI ---
+        window.onload = function() {
+            renderLogo();
+            cekSesiLogin();
+        };
+
+        function renderLogo() {
+            document.getElementById('header-logo-container').innerText = appState.logoText;
+        }
+
+        // --- AUTENTIKASI & NAVIGASI VIEW ---
+        function switchLoginTab(tab) {
+            appState.activeTabLogin = tab;
+            const tabSiswa = document.getElementById('tab-siswa');
+            const tabAdmin = document.getElementById('tab-admin');
+            const formSiswa = document.getElementById('form-login-siswa');
+            const formAdmin = document.getElementById('form-login-admin');
+
+            if (tab === 'siswa') {
+                tabSiswa.className = "flex-1 py-2 text-sm font-semibold rounded-md bg-white text-emerald-800 shadow-sm transition";
+                tabAdmin.className = "flex-1 py-2 text-sm font-semibold rounded-md text-slate-600 transition";
+                formSiswa.classList.remove('hidden');
+                formAdmin.classList.add('hidden');
+            } else {
+                tabAdmin.className = "flex-1 py-2 text-sm font-semibold rounded-md bg-white text-emerald-800 shadow-sm transition";
+                tabSiswa.className = "flex-1 py-2 text-sm font-semibold rounded-md text-slate-600 transition";
+                formAdmin.classList.remove('hidden');
+                formSiswa.classList.add('hidden');
+            }
+        }
+
+        function handleLoginSiswa(e) {
+            e.preventDefault();
+            const nama = document.getElementById('siswa-nama').value.trim();
+            const kelas = document.getElementById('siswa-kelas').value.trim();
+
+            if (!nama || !kelas) return alert('Nama dan kelas wajib diisi!');
+
+            // Hitung frekuensi pengerjaan siswa ini
+            const pengerjaanSiswa = appState.nilaiList.filter(n => n.nama.toLowerCase() === nama.toLowerCase());
+            
+            appState.currentUser = {
+                nama: nama,
+                kelas: kelas,
+                role: 'siswa',
+                kesempatan: pengerjaanSiswa.length
+            };
+
+            tampilkanDashboardSiswa();
+        }
+
+        function handleLoginAdmin(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
+
+            if (user === 'admin' && pass === appState.adminPassword) {
+                appState.currentUser = { nama: 'Administrator', kelas: 'Guru / Admin', role: 'admin' };
+                tampilkanDashboardAdmin();
+            } else {
+                alert('Username atau Password Admin salah!');
+            }
+        }
+
+        function logout() {
+            if (appState.timerInterval) clearInterval(appState.timerInterval);
+            appState.currentUser = null;
+            appState.isSimulation = false;
+            sembunyikanSemuaView();
+            document.getElementById('view-login').classList.remove('hidden');
+            document.getElementById('header-user-info').classList.add('hidden');
+            document.getElementById('form-login-siswa').reset();
+            document.getElementById('form-login-admin').reset();
+        }
+
+        function sembunyikanSemuaView() {
+            ['view-login', 'view-dashboard-siswa', 'view-ujian', 'view-hasil', 'view-dashboard-admin'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+        }
+
+        function cekSesiLogin() {
+            // Default awal tampil view login
+        }
+
+        // --- DASHBOARD SISWA ---
+        function tampilkanDashboardSiswa() {
+            sembunyikanSemuaView();
+            document.getElementById('view-dashboard-siswa').classList.remove('hidden');
+            document.getElementById('header-user-info').classList.remove('hidden');
+            document.getElementById('nav-user-display').innerText = `${appState.currentUser.nama} (${appState.currentUser.kelas})`;
+
+            document.getElementById('welcome-siswa-nama').innerText = appState.currentUser.nama;
+            document.getElementById('welcome-siswa-kelas').innerText = appState.currentUser.kelas;
+
+            const pengerjaanSiswa = appState.nilaiList.filter(n => n.nama.toLowerCase() === appState.currentUser.nama.toLowerCase());
+            const sisa = 10 - pengerjaanSiswa.length;
+            document.getElementById('sisa-kesempatan-display').innerText = `${sisa} dari 10 kesempatan tersisa`;
+
+            const btnStart = document.getElementById('btn-start-ujian');
+            const warningLimit = document.getElementById('warning-limit');
+
+            if (sisa <= 0 && !appState.isSimulation) {
+                btnStart.classList.add('hidden');
+                warningLimit.classList.remove('hidden');
+            } else {
+                btnStart.classList.remove('hidden');
+                warningLimit.classList.add('hidden');
+            }
+        }
+
+        function kembaliKeDashboard() {
+            if (appState.currentUser.role === 'admin' && appState.isSimulation) {
+                tampilkanDashboardAdmin();
+            } else {
+                tampilkanDashboardSiswa();
+            }
+        }
+
+        // --- PELAKSANAAN UJIAN ---
+        function startUjian() {
+            appState.currentSoalIndex = 0;
+            appState.jawabanSiswa = {};
+            appState.sisaWaktu = 90 * 60; // 90 menit
+
+            sembunyikanSemuaView();
+            document.getElementById('view-ujian').classList.remove('hidden');
+
+            renderSoal();
+            renderPaginationDots();
+            mulaiTimer();
+        }
+
+        function mulaiTimer() {
+            if (appState.timerInterval) clearInterval(appState.timerInterval);
+            appState.timerInterval = setInterval(() => {
+                appState.sisaWaktu--;
+                const m = Math.floor(appState.sisaWaktu / 60);
+                const s = appState.sisaWaktu % 60;
+                document.getElementById('timer-display').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+                if (appState.sisaWaktu <= 0) {
+                    clearInterval(appState.timerInterval);
+                    alert('Waktu ujian telah habis!');
+                    selesaikanUjian();
+                }
+            }, 1000);
+        }
+
+        function renderSoal() {
+            const idx = appState.currentSoalIndex;
+            const soal = appState.bankSoal[idx];
+            const container = document.getElementById('soal-container');
+
+            document.getElementById('soal-nomor-kategori').innerText = `Soal ${idx + 1} dari ${appState.bankSoal.length} — ${soal.kategori}`;
+            document.getElementById('soal-progress-text').innerText = `Progress: ${Math.round(((idx + 1) / appState.bankSoal.length) * 100)}%`;
+
+            let html = `<p class="font-medium text-slate-800 text-base leading-relaxed mb-6">${idx + 1}. ${soal.pertanyaan}</p>`;
+
+            if (soal.type === 'pg') {
+                html += `<div class="space-y-3">`;
+                soal.options.forEach((opt, oIdx) => {
+                    const huruf = String.fromCharCode(65 + oIdx);
+                    const isChecked = appState.jawabanSiswa[idx] === oIdx ? 'checked' : '';
+                    html += `
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="radio" name="jawaban_soal_${idx}" value="${oIdx}" ${isChecked} onchange="simpanJawabanPG(${idx}, ${oIdx})" class="mt-1 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-sm font-bold text-slate-700">${huruf}.</span>
+                            <span class="text-sm text-slate-700">${opt}</span>
+                        </label>
+                    `;
+                });
+                html += `</div>`;
+            } else if (soal.type === 'pg_kompleks') {
+                html += `<p class="text-xs text-amber-700 font-semibold mb-3">Pilihlah dua jawaban yang paling tepat!</p>`;
+                html += `<div class="space-y-3">`;
+                soal.options.forEach((opt, oIdx) => {
+                    const savedAns = appState.jawabanSiswa[idx] || [];
+                    const isChecked = savedAns.includes(oIdx) ? 'checked' : '';
+                    html += `
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" name="jawaban_soal_${idx}" value="${oIdx}" ${isChecked} onchange="simpanJawabanKompleks(${idx}, ${oIdx})" class="mt-1 rounded text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-sm text-slate-700">${opt}</span>
+                        </label>
+                    `;
+                });
+                html += `</div>`;
+            } else if (soal.type === 'menjodohkan') {
+                html += `<p class="text-xs text-amber-700 font-semibold mb-3">Pasangkan premis berikut dengan jawaban yang sesuai di sebelah kanan:</p>`;
+                html += `<div class="space-y-4">`;
+                soal.pasangan.forEach((item, pIdx) => {
+                    const savedAns = appState.jawabanSiswa[idx] || {};
+                    const currentSelected = savedAns[pIdx] !== undefined ? savedAns[pIdx] : "";
+                    
+                    // Kumpulkan semua opsi unik jawaban untuk dropdown
+                    const allOpsiJawaban = [...new Set(soal.pasangan.map(p => p.jawaban))];
+
+                    html += `
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                            <span class="text-sm text-slate-700 flex-1">${pIdx + 1}. ${item.premis}</span>
+                            <select onchange="simpanJawabanMenjodohkan(${idx}, ${pIdx}, this.value)" class="w-full sm:w-64 px-3 py-1.5 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                                <option value="">-- Pilih Jawaban --</option>
+                                ${allOpsiJawaban.map((ans, aIdx) => `
+                                    <option value="${ans}" ${currentSelected === ans ? 'selected' : ''}>${ans}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else if (soal.type === 'isian') {
+                const savedVal = appState.jawabanSiswa[idx] || '';
+                html += `
+                    <div>
+                        <input type="text" value="${savedVal}" oninput="simpanJawabanIsian(${idx}, this.value)" placeholder="Ketik jawaban singkat di sini..." class="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+
+            // Tombol Navigasi Prev/Next/Selesai
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+
+            if (idx === 0) {
+                btnPrev.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnPrev.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (idx === appState.bankSoal.length - 1) {
+                btnNext.innerText = "Selesai & Kumpulkan";
+                btnNext.className = "bg-rose-600 hover:bg-rose-700 text-white font-semibold px-5 py-2 rounded-lg text-sm transition shadow";
+            } else {
+                btnNext.innerText = "Selanjutnya";
+                btnNext.className = "bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-5 py-2 rounded-lg text-sm transition shadow";
+            }
+
+            renderPaginationDots();
+        }
+
+        function renderPaginationDots() {
+            const container = document.getElementById('nav-pagination-dots');
+            let html = '';
+            appState.bankSoal.forEach((_, i) => {
+                let bg = 'bg-slate-200 text-slate-700';
+                if (i === appState.currentSoalIndex) bg = 'bg-emerald-800 text-white font-bold';
+                else if (appState.jawabanSiswa[i] !== undefined && appState.jawabanSiswa[i] !== '') bg = 'bg-emerald-200 text-emerald-900';
+
+                html += `<button onclick="pindahSoal(${i})" class="w-7 h-7 rounded text-xs ${bg} transition">${i + 1}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function pindahSoal(i) {
+            appState.currentSoalIndex = i;
+            renderSoal();
+        }
+
+        function prevSoal() {
+            if (appState.currentSoalIndex > 0) {
+                appState.currentSoalIndex--;
+                renderSoal();
+            }
+        }
+
+        function nextSoal() {
+            if (appState.currentSoalIndex < appState.bankSoal.length - 1) {
+                appState.currentSoalIndex++;
+                renderSoal();
+            } else {
+                if (confirm('Apakah Anda yakin ingin menyelesaikan dan mengumpulkan jawaban ujian ini?')) {
+                    selesaikanUjian();
+                }
+            }
+        }
+
+        // --- SIMPAN JAWABAN ---
+        function simpanJawabanPG(idx, val) {
+            appState.jawabanSiswa[idx] = val;
+            renderPaginationDots();
+        }
+
+        function simpanJawabanKompleks(idx, optIdx) {
+            if (!appState.jawabanSiswa[idx]) appState.jawabanSiswa[idx] = [];
+            let arr = appState.jawabanSiswa[idx];
+            const pos = arr.indexOf(optIdx);
+            if (pos > -1) {
+                arr.splice(pos, 1);
+            } else {
+                if (arr.length < 2) arr.push(optIdx);
+                else alert('Maksimal pilih 2 jawaban!');
+            }
+            appState.jawabanSiswa[idx] = arr;
+            renderSoal();
+        }
+
+        function simpanJawabanMenjodohkan(idx, pIdx, val) {
+            if (!appState.jawabanSiswa[idx]) appState.jawabanSiswa[idx] = {};
+            appState.jawabanSiswa[idx][pIdx] = val;
+            renderPaginationDots();
+        }
+
+        function simpanJawabanIsian(idx, val) {
+            appState.jawabanSiswa[idx] = val.trim();
+            renderPaginationDots();
+        }
+
+        // --- PENILAIAN & SELESAI UJIAN ---
+        function selesaikanUjian() {
+            if (appState.timerInterval) clearInterval(appState.timerInterval);
+
+            let skorTotal = 0;
+            const bobotSoal = 100 / appState.bankSoal.length; // Per soal bobot merata
+
+            appState.bankSoal.forEach((soal, idx) => {
+                const ans = appState.jawabanSiswa[idx];
+                if (ans === undefined || ans === '' || (Array.isArray(ans) && ans.length === 0)) return;
+
+                if (soal.type === 'pg') {
+                    if (Number(ans) === Number(soal.kunci)) {
+                        skorTotal += bobotSoal;
+                    }
+                } else if (soal.type === 'pg_kompleks') {
+                    // Cek kecocokan array (harus tepat kedua elemennya)
+                    if (Array.isArray(ans) && ans.length === soal.kunci.length) {
+                        const sama = ans.sort().every((val, i) => val === soal.kunci.sort()[i]);
+                        if (sama) skorTotal += bobotSoal;
+                    }
+                } else if (soal.type === 'menjodohkan') {
+                    // Hitung parsial per pasangan benar
+                    let benarPasangan = 0;
+                    soal.pasangan.forEach((p, pIdx) => {
+                        if (ans[pIdx] === p.jawaban) benarPasangan++;
+                    });
+                    skorTotal += (bobotSoal * (benarPasangan / soal.pasangan.length));
+                } else if (soal.type === 'isian') {
+                    if (String(ans).toLowerCase().trim() === String(soal.kunci).toLowerCase().trim()) {
+                        skorTotal += bobotSoal;
+                    }
+                }
+            });
+
+            const nilaiAkhir = Math.round(skorTotal);
+            const statusLulus = nilaiAkhir >= 80 ? "LULUS (Tuntas)" : "TIDAK LULUS (Remedial)";
+
+            // Simpan ke riwayat nilai
+            const dataHasil = {
+                nama: appState.currentUser.nama,
+                kelas: appState.currentUser.kelas,
+                nilai: nilaiAkhir,
+                status: statusLulus,
+                waktu: new Date().toLocaleString('id-ID')
+            };
+
+            appState.nilaiList.push(dataHasil);
+            localStorage.setItem('pkn_nilai_list', JSON.stringify(appState.nilaiList));
+
+            // Tampilkan view hasil
+            sembunyikanSemuaView();
+            document.getElementById('view-hasil').classList.remove('hidden');
+            document.getElementById('hasil-nama').innerText = `${appState.currentUser.nama} (${appState.currentUser.kelas})`;
+            document.getElementById('hasil-skor').innerText = nilaiAkhir;
+            
+            const ketEl = document.getElementById('hasil-keterangan');
+            ketEl.innerText = statusLulus;
+            ketEl.className = nilaiAkhir >= 80 ? "text-lg font-bold text-emerald-600" : "text-lg font-bold text-rose-600";
+            
+            document.getElementById('hasil-catatan').innerText = nilaiAkhir >= 80 
+                ? "Selamat! Anda telah melampaui KKM (80)." 
+                : "Nilai Anda di bawah KKM (80). Silakan tingkatkan pemahaman materi.";
+        }
+
+        // --- DASHBOARD ADMIN ---
+        function tampilkanDashboardAdmin() {
+            sembunyikanSemuaView();
+            document.getElementById('view-dashboard-admin').classList.remove('hidden');
+            document.getElementById('header-user-info').classList.remove('hidden');
+            document.getElementById('nav-user-display').innerText = `Administrator (Guru)`;
+
+            renderTabelNilai();
+            renderAdminListSoal();
+        }
+
+        function switchAdminTab(tab) {
+            const tabNilai = document.getElementById('admin-tab-nilai');
+            const tabSoal = document.getElementById('admin-tab-soal');
+            const contentNilai = document.getElementById('admin-content-nilai');
+            const contentSoal = document.getElementById('admin-content-soal');
+
+            if (tab === 'nilai') {
+                tabNilai.className = "px-4 py-2 font-bold text-sm text-emerald-800 border-b-2 border-emerald-800";
+                tabSoal.className = "px-4 py-2 font-bold text-sm text-slate-500";
+                contentNilai.classList.remove('hidden');
+                contentSoal.classList.add('hidden');
+                renderTabelNilai();
+            } else {
+                tabSoal.className = "px-4 py-2 font-bold text-sm text-emerald-800 border-b-2 border-emerald-800";
+                tabNilai.className = "px-4 py-2 font-bold text-sm text-slate-500";
+                contentSoal.classList.remove('hidden');
+                contentNilai.classList.add('hidden');
+                renderAdminListSoal();
+            }
+        }
+
+        function renderTabelNilai() {
+            const tbody = document.getElementById('tabel-nilai-body');
+            document.getElementById('count-nilai').innerText = appState.nilaiList.length;
+
+            if (appState.nilaiList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Belum ada data nilai siswa.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            appState.nilaiList.forEach((item, idx) => {
+                const badgeColor = item.nilai >= 80 ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800";
+                html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3">${idx + 1}</td>
+                        <td class="p-3 font-medium">${item.nama}</td>
+                        <td class="p-3">${item.kelas}</td>
+                        <td class="p-3 font-bold">${item.nilai}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeColor}">${item.status}</span></td>
+                        <td class="p-3 text-xs text-slate-500">${item.waktu}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function downloadExcelNilai() {
+            if (appState.nilaiList.length === 0) return alert('Belum ada data nilai untuk didownload.');
+
+            let csvContent = "data:text/csv;charset=utf-8,No,Nama Lengkap,Kelas,Nilai,Status,Waktu Pengerjaan\r\n";
+            appState.nilaiList.forEach((item, idx) => {
+                csvContent += `${idx + 1},"${item.nama}","${item.kelas}",${item.nilai},"${item.status}","${item.waktu}"\r\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Rekap_Nilai_STS_PKN_MA_Muallimin.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function renderAdminListSoal() {
+            const container = document.getElementById('admin-list-soal');
+            let html = '';
+
+            appState.bankSoal.forEach((soal, idx) => {
+                html += `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded">Soal ${idx + 1} (${soal.type.toUpperCase()})</span>
+                            <span class="text-xs text-slate-500">${soal.kategori}</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Pertanyaan</label>
+                            <textarea id="edit_pertanyaan_${idx}" rows="2" class="w-full px-3 py-2 border rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600">${soal.pertanyaan}</textarea>
+                        </div>
+                `;
+
+                if (soal.type === 'pg') {
+                    html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">`;
+                    soal.options.forEach((opt, oIdx) => {
+                        html += `
+                            <div>
+                                <label class="text-[10px] uppercase font-semibold text-slate-500">Opsi ${String.fromCharCode(65 + oIdx)}</label>
+                                <input type="text" id="edit_opt_${idx}_${oIdx}" value="${opt}" class="w-full px-2.5 py-1.5 border rounded text-xs bg-white">
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                    html += `
+                        <div>
+                            <label class="text-xs font-semibold uppercase text-slate-600 mb-1">Kunci Jawaban (0=A, 1=B, 2=C, 3=D, 4=E)</label>
+                            <input type="number" min="0" max="4" id="edit_kunci_${idx}" value="${soal.kunci}" class="w-24 px-3 py-1.5 border rounded text-xs bg-white">
+                        </div>
+                    `;
+                } else if (soal.type === 'isian') {
+                    html += `
+                        <div>
+                            <label class="text-xs font-semibold uppercase text-slate-600 mb-1">Kunci Jawaban Singkat</label>
+                            <input type="text" id="edit_kunci_isian_${idx}" value="${soal.kunci}" class="w-full px-3 py-1.5 border rounded text-xs bg-white">
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function simpanBankSoal() {
+            appState.bankSoal.forEach((soal, idx) => {
+                const pEl = document.getElementById(`edit_pertanyaan_${idx}`);
+                if (pEl) soal.pertanyaan = pEl.value.trim();
+
+                if (soal.type === 'pg') {
+                    soal.options = [
+                        document.getElementById(`edit_opt_${idx}_0`).value.trim(),
+                        document.getElementById(`edit_opt_${idx}_1`).value.trim(),
+                        document.getElementById(`edit_opt_${idx}_2`).value.trim(),
+                        document.getElementById(`edit_opt_${idx}_3`).value.trim(),
+                        document.getElementById(`edit_opt_${idx}_4`).value.trim()
+                    ];
+                    soal.kunci = Number(document.getElementById(`edit_kunci_${idx}`).value);
+                } else if (soal.type === 'isian') {
+                    soal.kunci = document.getElementById(`edit_kunci_isian_${idx}`).value.trim();
+                }
+            });
+
+            localStorage.setItem('pkn_bank_soal', JSON.stringify(appState.bankSoal));
+            alert('Perubahan bank soal berhasil disimpan!');
+        }
+
+        function resetSoalDefault() {
+            if (confirm('Reset bank soal ke pengaturan awal default?')) {
+                appState.bankSoal = defaultSoal;
+                localStorage.setItem('pkn_bank_soal', JSON.stringify(defaultSoal));
+                renderAdminListSoal();
+                alert('Bank soal telah direset.');
+            }
+        }
+
+        // --- FITUR ADMIN LAINNYA ---
+        function bukaUjiCobaSiswa() {
+            appState.isSimulation = true;
+            appState.currentUser = {
+                nama: "Uji Coba Guru (Admin)",
+                kelas: "Guru Simulasi",
+                role: 'siswa'
+            };
+            tampilkanDashboardSiswa();
+        }
+
+        function bukaModalGantiPassword() {
+            document.getElementById('modal-password').classList.remove('hidden');
+        }
+
+        function simpanPasswordBaru() {
+            const passBaru = document.getElementById('input-new-pass').value.trim();
+            if (!passBaru) return alert('Password baru tidak boleh kosong!');
+            appState.adminPassword = passBaru;
+            localStorage.setItem('pkn_admin_pass', passBaru);
+            tutupModal('modal-password');
+            alert('Password admin berhasil diganti!');
+        }
+
+        function bukaModalEditLogo() {
+            document.getElementById('modal-logo').classList.remove('hidden');
+        }
+
+        function simpanLogoBaru() {
+            const logoBaru = document.getElementById('input-new-logo').value.trim();
+            if (!logoBaru) return alert('Logo tidak boleh kosong!');
+            appState.logoText = logoBaru;
+            localStorage.setItem('pkn_logo_text', logoBaru);
+            renderLogo();
+            tutupModal('modal-logo');
+            alert('Logo berhasil diperbarui!');
+        }
+
+        function tutupModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
